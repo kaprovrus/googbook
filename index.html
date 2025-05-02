@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Вакансии</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="language-switcher">
+    <button onclick="switchLanguage('ru')">RU</button>
+    <button onclick="switchLanguage('kk')">KZ</button>
+  </div>
+
+  <header>
+    <img src="logo.png" alt="Logo" class="logo">
+    <h1 id="title">Мы ищем сотрудников</h1>
+    <p id="date"></p>
+  </header>
+
+  <div class="filter">
+    <button onclick="filterCity('all')" id="allBtn">Все</button>
+    <button onclick="filterCity('Нур-Султан')">Нур-Султан</button>
+    <button onclick="filterCity('Алматы')">Алматы</button>
+    <button onclick="filterCity('Ташкент')">Ташкент</button>
+    <button onclick="refreshJobs()" id="refreshBtn">Обновить</button>
+  </div>
+
+  <div class="job-list" id="jobList"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>

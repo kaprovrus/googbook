@@ -1,0 +1,99 @@
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: #f7f9fc;
+  margin: 0;
+  padding: 0;
+  color: #333;
+}
+
+.logo {
+  position: absolute;
+  top: 150px;
+  left: 150px;
+  height: 60px;
+}
+
+.language-switcher {
+  position: fixed;
+  top: 15px;
+  right: 15px;
+  background: white;
+  padding: 5px 10px;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  z-index: 1000;
+}
+
+header {
+  text-align: center;
+  padding: 80px 20px 20px;
+}
+
+header h1 {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+header p {
+  font-size: 14px;
+  color: #777;
+}
+
+.filter {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.filter button {
+  margin: 5px;
+  padding: 10px 15px;
+  border: none;
+  background: #3498db;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.filter button:hover {
+  background: #2980b9;
+}
+
+.job-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.job-button {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-left: 6px solid #3498db;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  transition: transform 0.2s ease;
+  cursor: pointer;
+  text-align: left;
+}
+
+.job-button:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.job-button strong {
+  font-size: 16px;
+}
+
+.job-button em {
+  color: #2ecc71;
+}
+
+.job-button u {
+  color: #888;
+  font-size: 13px;
+}

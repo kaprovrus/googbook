@@ -1,19 +1,28 @@
-name: Update Data
+name: Update Vacancies Data
+
 on:
   schedule:
-    - cron: '0 9 * * *' # Каждый день в 9 утра
+    - cron: '0 * * * *' # Каждый час
   workflow_dispatch:
 
 jobs:
-  update:
+  update-data:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Fetch data
-        run: |
-          curl "${{ secrets.API_URL }}" > data.json
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
-          git add data.json
-          git commit -m "Auto-update data" || echo "No changes"
-          git push
+    - uses: actions/checkout@v3
+      with:
+        token: ${{ secrets.GH_TOKEN }}
+        
+    - name: Fetch data from API
+      run: |
+        curl "${{ secrets.API_URL }}" -o data.json
+        
+    - name: Commit and push changes
+      run: |
+        git config --global user.name "GitHub Actions"
+        git config --global user.email "actions@github.com"
+        git add data.json
+        git diff --quiet && git diff --staged --quiet || git commit -m "Auto-update data"
+        git push
+      env:
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}

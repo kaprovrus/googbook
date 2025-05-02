@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const cityFilter = document.getElementById('city-filter');
   const refreshBtn = document.getElementById('refresh');
   
-  const API_URL = 'https://script.google.com/macros/s/AKfycbzhAX4GPquWSxKoinrlb-OIvyj5H47NdYUn9hnEzKl4e1lTdLgRiZE_zEr5qA5aq9AC/exec';
+  const API_URL = 'https://script.google.com/macros/s/AKfycbx_XO4Uyuh87jyiFN8OYggGlZ09qyOs7-yCWepp8C7DVgVFJ5wk2WdjzYPWXOpahCztPw/exec';
   let vacancies = [];
   let cities = new Set();
 

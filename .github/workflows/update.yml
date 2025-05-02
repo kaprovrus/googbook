@@ -1,0 +1,19 @@
+name: Update Data
+on:
+  schedule:
+    - cron: '0 9 * * *' # Каждый день в 9 утра
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Fetch data
+        run: |
+          curl "${{ secrets.API_URL }}" > data.json
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add data.json
+          git commit -m "Auto-update data" || echo "No changes"
+          git push

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Карьерные возможности | Ваша компания</title>
+    <title>Жұмыс орындары | Ваша компания</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" href="assets/logo.png">
@@ -11,8 +11,17 @@
 <body>
     <header>
         <div class="header-container">
-            <img src="assets/logo.png" alt="Логотип компании" class="logo">
-            <h1>Карьерные возможности</h1>
+            <img src="assets/logo.png" alt="Компания логотипы" class="logo">
+            <div class="header-text">
+                <h1 data-lang="ru">Карьерные возможности</h1>
+                <h1 data-lang="kz" style="display:none">Жұмыс орындары</h1>
+                <p data-lang="ru">Обновлено: <span id="update-time"></span></p>
+                <p data-lang="kz" style="display:none">Жаңартылды: <span id="update-time-kz"></span></p>
+            </div>
+            <button id="language-switcher" class="lang-btn">
+                <img src="assets/flag-kz.png" alt="Қазақша">
+                <span>Қаз</span>
+            </button>
         </div>
     </header>
 
@@ -20,23 +29,27 @@
         <div class="filters">
             <div class="search-box">
                 <i class="fas fa-search"></i>
-                <input type="text" id="search" placeholder="Поиск вакансий...">
+                <input type="text" id="search" placeholder="Поиск вакансий..." data-lang="ru">
+                <input type="text" id="search-kz" placeholder="Жұмыс іздеу..." data-lang="kz" style="display:none">
             </div>
             <select id="city-filter">
-                <option value="">Все города</option>
+                <option value="" data-lang="ru">Все города</option>
+                <option value="" data-lang="kz" style="display:none">Барлық қалалар</option>
             </select>
         </div>
 
         <div id="vacancies-container">
             <div class="loader">
                 <div class="spinner"></div>
-                <p>Загружаем вакансии...</p>
+                <p data-lang="ru">Загружаем вакансии...</p>
+                <p data-lang="kz" style="display:none">Жұмыс орындары жүктелуде...</p>
             </div>
         </div>
     </main>
 
     <footer>
-        <p>© 2024 Ваша компания. Все права защищены.</p>
+        <p data-lang="ru">© 2024 Ваша компания. Все права защищены.</p>
+        <p data-lang="kz" style="display:none">© 2024 Сіздің компанияңыз. Барлық құқықтар сақталған.</p>
     </footer>
 
     <script src="script.js"></script>

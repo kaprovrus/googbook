@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const API_URL = 'https://script.google.com/macros/s/AKfycbx_XO4Uyuh87jyiFN8OYggGlZ09qyOs7-yCWepp8C7DVgVFJ5wk2WdjzYPWXOpahCztPw/exec';
+    const API_URL = 'https://script.google.com/macros/s/AKfycbw1HV2piKoHO77blSfvkY3cuHtf0Qppj1VkoPBH5LYNtOPlx-t2DU0HSjYyhAv7tslvRQ/exec';
     const WHATSAPP_NUMBER = '77712591727'; // Замените на ваш номер
     const container = document.getElementById('vacancies-container');
     const searchInput = document.getElementById('search');

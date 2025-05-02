@@ -1,95 +1,104 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const vacanciesContainer = document.getElementById('vacancies');
-  const searchInput = document.getElementById('search');
-  const cityFilter = document.getElementById('city-filter');
-  
-  // Замените на ваш URL API из Google Apps Script
-  const API_URL = 'https://script.google.com/macros/s/AKfycbzhAX4GPquWSxKoinrlb-OIvyj5H47NdYUn9hnEzKl4e1lTdLgRiZE_zEr5qA5aq9AC/exec';
-  
-  let vacancies = [];
-  let cities = new Set();
-  
-  // Загрузка данных
-  async function loadData() {
-    try {
-      const response = await fetch(API_URL);
-      vacancies = await response.json();
-      processData();
-      renderVacancies();
-    } catch (error) {
-      console.error('Ошибка загрузки:', error);
-      vacanciesContainer.innerHTML = '<p>Не удалось загрузить вакансии</p>';
+document.addEventListener('DOMContentLoaded', function() {
+    const container = document.getElementById('vacancies-container');
+    const search = document.getElementById('search');
+    const cityFilter = document.getElementById('city-filter');
+    const refreshBtn = document.getElementById('refresh');
+    
+    let vacancies = [];
+    let cities = new Set();
+
+    // Загрузка данных
+    async function loadData() {
+        try {
+            showLoading();
+            
+            // Сначала пробуем локальный файл
+            const response = await fetch('data/vacancies.json');
+            if (!response.ok) throw new Error('Failed to load local data');
+            
+            const data = await response.json();
+            vacancies = data;
+            processData();
+            renderVacancies();
+        } catch (error) {
+            console.error('Using fallback API:', error);
+            // Fallback к Google API
+            const apiResponse = await fetch('https://script.google.com/macros/s/AKfycbzhAX4GPquWSxKoinrlb-OIvyj5H47NdYUn9hnEzKl4e1lTdLgRiZE_zEr5qA5aq9AC/exec');
+            vacancies = await apiResponse.json();
+            processData();
+            renderVacancies();
+        }
     }
-  }
-  
-  // Обработка данных
-  function processData() {
-    cities.clear();
-    cityFilter.innerHTML = '<option value="">Все города</option>';
-    
-    vacancies.forEach(v => {
-      if (v.Город) cities.add(v.Город);
-    });
-    
-    cities.forEach(city => {
-      const option = document.createElement('option');
-      option.value = city;
-      option.textContent = city;
-      cityFilter.appendChild(option);
-    });
-  }
-  
-  // Отображение вакансий
-  function renderVacancies(filteredVacancies) {
-    const data = filteredVacancies || vacancies;
-    
-    if (data.length === 0) {
-      vacanciesContainer.innerHTML = '<p>Вакансии не найдены</p>';
-      return;
+
+    function showLoading() {
+        container.innerHTML = `
+            <div class="loader">
+                <div class="spinner"></div>
+                <p>Загрузка вакансий...</p>
+            </div>
+        `;
     }
-    
-    vacanciesContainer.innerHTML = '';
-    
-    data.forEach(vacancy => {
-      const vacancyEl = document.createElement('div');
-      vacancyEl.className = 'vacancy';
-      vacancyEl.innerHTML = `
-        <h2>${vacancy.Должность}</h2>
-        <div class="meta">
-          <span>${vacancy.Компания}</span> •
-          <span>${vacancy.Город}</span> •
-          <span>${vacancy.Дата}</span>
-        </div>
-        <p>${vacancy.Описание}</p>
-        <div class="salary">${vacancy.Зарплата || 'Не указана'}</div>
-      `;
-      vacanciesContainer.appendChild(vacancyEl);
-    });
-  }
-  
-  // Фильтрация
-  function filterVacancies() {
-    const searchTerm = searchInput.value.toLowerCase();
-    const selectedCity = cityFilter.value;
-    
-    const filtered = vacancies.filter(v => {
-      const matchesSearch = 
-        v.Должность.toLowerCase().includes(searchTerm) ||
-        v.Компания.toLowerCase().includes(searchTerm) ||
-        (v.Описание && v.Описание.toLowerCase().includes(searchTerm));
-      
-      const matchesCity = !selectedCity || v.Город === selectedCity;
-      
-      return matchesSearch && matchesCity;
-    });
-    
-    renderVacancies(filtered);
-  }
-  
-  // Слушатели событий
-  searchInput.addEventListener('input', filterVacancies);
-  cityFilter.addEventListener('change', filterVacancies);
-  
-  // Инициализация
-  loadData();
+
+    function processData() {
+        cities.clear();
+        cityFilter.innerHTML = '<option value="">Все города</option>';
+        
+        vacancies.forEach(v => {
+            if (v.city) cities.add(v.city);
+        });
+        
+        cities.forEach(city => {
+            const option = document.createElement('option');
+            option.value = city;
+            option.textContent = city;
+            cityFilter.appendChild(option);
+        });
+    }
+
+    function renderVacancies(data = vacancies) {
+        container.innerHTML = '';
+        
+        if (data.length === 0) {
+            container.innerHTML = '<p>Вакансии не найдены</p>';
+            return;
+        }
+        
+        data.forEach(v => {
+            const vacancy = document.createElement('div');
+            vacancy.className = 'vacancy';
+            vacancy.innerHTML = `
+                <h2>${v.position}</h2>
+                <div class="meta">
+                    <span>${v.company}</span> • 
+                    <span>${v.city}</span>
+                </div>
+                <p>${v.description}</p>
+                <div class="salary">${v.salary}</div>
+            `;
+            container.appendChild(vacancy);
+        });
+    }
+
+    function filterVacancies() {
+        const searchTerm = search.value.toLowerCase();
+        const city = cityFilter.value;
+        
+        const filtered = vacancies.filter(v => {
+            const matchesSearch = 
+                v.position.toLowerCase().includes(searchTerm) ||
+                v.company.toLowerCase().includes(searchTerm);
+            
+            const matchesCity = !city || v.city === city;
+            
+            return matchesSearch && matchesCity;
+        });
+        
+        renderVacancies(filtered);
+    }
+
+    search.addEventListener('input', filterVacancies);
+    cityFilter.addEventListener('change', filterVacancies);
+    refreshBtn.addEventListener('click', loadData);
+
+    loadData();
 });

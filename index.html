@@ -5,84 +5,101 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ресторан ищет команду</title>
   <style>
-    body {
-      font-family: sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #f2f2f2;
-    }
-    header {
-      position: relative;
-      text-align: center;
-      background-color: #fff;
-      padding: 20px;
-    }
-    header img {
-      max-width: 150px;
-    }
-    header h1 {
-      font-size: 2.5em;
-      margin-top: 10px;
-    }
-    .lang-switch {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 999;
-    }
-    .lang-switch button {
-      margin-left: 5px;
-      padding: 5px 10px;
-      cursor: pointer;
-    }
-    .filter {
-      text-align: center;
-      margin: 20px 0;
-    }
-    .filter select {
-      padding: 10px;
-      font-size: 1em;
-    }
-    .date-info {
-      text-align: center;
-      font-size: 0.9em;
-      color: #555;
-      margin-bottom: 10px;
-    }
-    .stickers {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 20px;
-      padding: 20px;
-    }
-    .sticker {
-      background: #fffacd;
-      border: 2px dashed #ccc;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
-      cursor: pointer;
-      transition: transform 0.2s;
-    }
-    .sticker:hover {
-      transform: scale(1.03);
-    }
-    .sticker h3 {
-      margin: 0 0 10px 0;
-    }
-    .sticker p {
-      margin: 5px 0;
-    }
-    .loading {
-      text-align: center;
-      padding: 20px;
-      font-style: italic;
-    }
-    .error {
-      color: red;
-      text-align: center;
-    }
-  </style>
+  body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #f2f2f2;
+  }
+
+  header {
+    position: relative;
+    text-align: center;
+    background-color: #fff;
+    padding: 20px;
+  }
+
+  header img {
+    max-width: 150px;
+  }
+
+  header h1 {
+    font-size: 2.5em;
+    margin-top: 10px;
+  }
+
+  .lang-switch {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 999;
+  }
+
+  .lang-switch button {
+    margin-left: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+
+  .filter {
+    text-align: center;
+    margin: 20px 0;
+  }
+
+  .filter select {
+    padding: 10px;
+    font-size: 1em;
+  }
+
+  .date-info {
+    text-align: center;
+    font-size: 0.9em;
+    color: #555;
+    margin-bottom: 10px;
+  }
+
+  .stickers {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    padding: 20px;
+  }
+
+  .sticker {
+    background: #f0ffe0; /* светло-зелёный фон */
+    padding: 20px;
+    border-radius: 16px; /* сглаженные края */
+    box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.1); /* мягкая тень */
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .sticker:hover {
+    transform: scale(1.03);
+    box-shadow: 3px 6px 14px rgba(0, 0, 0, 0.15); /* усиление при наведении */
+  }
+
+  .sticker h3 {
+    margin: 0 0 10px 0;
+  }
+
+  .sticker p {
+    margin: 5px 0;
+  }
+
+  .loading {
+    text-align: center;
+    padding: 20px;
+    font-style: italic;
+  }
+
+  .error {
+    color: red;
+    text-align: center;
+  }
+</style>
+
+
 </head>
 <body>
   <header>

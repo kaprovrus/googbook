@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ресторан ищет команду</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f2f2f2;
+    }
+    header {
+      position: relative;
+      text-align: center;
+      background-color: #fff;
+      padding: 20px;
+    }
+    header img {
+      max-width: 150px;
+    }
+    header h1 {
+      font-size: 2.5em;
+      margin-top: 10px;
+    }
+    .lang-switch {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 999;
+    }
+    .lang-switch button {
+      margin-left: 5px;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+    .filter {
+      text-align: center;
+      margin: 20px 0;
+    }
+    .filter select {
+      padding: 10px;
+      font-size: 1em;
+    }
+    .date-info {
+      text-align: center;
+      font-size: 0.9em;
+      color: #555;
+      margin-bottom: 10px;
+    }
+    .stickers {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      padding: 20px;
+    }
+    .sticker {
+      background: #fffacd;
+      border: 2px dashed #ccc;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .sticker:hover {
+      transform: scale(1.03);
+    }
+    .sticker h3 {
+      margin: 0 0 10px 0;
+    }
+    .sticker p {
+      margin: 5px 0;
+    }
+    .loading {
+      text-align: center;
+      padding: 20px;
+      font-style: italic;
+    }
+    .error {
+      color: red;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="header-bg.jpg" alt="Logo" />
+    <h1 id="title">Ресторан ищет команду</h1>
+  </header>
+
+  <div class="lang-switch">
+    <button onclick="setLanguage('ru')">RU</button>
+    <button onclick="setLanguage('kz')">KZ</button>
+  </div>
+
+  <div class="filter">
+    <select id="city-filter" onchange="renderData()">
+      <option value="all">Все города</option>
+      <option value="Астана">Астана</option>
+      <option value="Алматы">Алматы</option>
+      <option value="Ташкент">Ташкент</option>
+    </select>
+  </div>
+
+  <div class="date-info" id="last-updated"></div>
+
+  <div class="stickers" id="stickers-container">
+    <div class="loading">Загрузка вакансий...</div>
+  </div>
+
+  <script>
+    // URL вашего Google Apps Script API
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzpfL2K1tZyoWv-F9fAQwAtMreS7xJZVca46HoS3--fhTbGdglb-ARmtHOznMDryDaUXA/exec';
+    let vacanciesData = [];
+    let currentLang = 'ru';
+
+    // Функция для форматирования даты
+    function formatDate(dateString) {
+      if (!dateString) return 'не указана';
+      try {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('ru-RU');
+      } catch {
+        return 'не указана';
+      }
+    }
+
+    // Функция для смены языка
+    function setLanguage(lang) {
+      currentLang = lang;
+      document.getElementById('title').textContent =
+        lang === 'ru' ? 'Ресторан ищет команду' : 'Мейрамхана команда іздейді';
+      renderData();
+    }
+
+    // Функция для отображения данных
+    function renderData() {
+      const container = document.getElementById('stickers-container');
+      
+      if (vacanciesData.length === 0) {
+        container.innerHTML = '<div class="error">Нет данных для отображения</div>';
+        return;
+      }
+
+      const city = document.getElementById('city-filter').value;
+      let filtered = vacanciesData;
+
+      // Фильтрация по городу
+      if (city !== 'all') {
+        filtered = filtered.filter(item => item.город === city);
+      }
+
+      // Обновление контейнера
+      container.innerHTML = '';
+
+      if (filtered.length === 0) {
+        container.innerHTML = '<div class="error">Нет вакансий для выбранного города</div>';
+        return;
+      }
+
+      // Обновление даты
+      document.getElementById('last-updated').textContent =
+        (currentLang === 'ru' ? 'Актуально на' : 'Жаңартылған күні') + ': ' + formatDate(filtered[0].дата_обновления);
+
+      // Создание стикеров
+      filtered.forEach(item => {
+        const sticker = document.createElement('div');
+        sticker.className = 'sticker';
+
+        // Исправляем опечатку в названии поля
+        const restaurantName = item["название_ресторана_" + currentLang] || 
+                              item["нназвание_ресторана_" + currentLang] || 
+                              "Не указано";
+
+       // Подготовка номера WhatsApp
+const whatsappNumber = String(item.номер_ватсап).replace(/\D/g, '');
+
+sticker.innerHTML = `
+  <h3>${item["должность_" + currentLang] || 'Должность не указана'}</h3>
+  <p><strong>${currentLang === 'ru' ? 'Зарплата' : 'Жалақы'}:</strong> ${item.зарплата || 'не указана'}</p>
+  <p>${item["описание_" + currentLang] || ''}</p>
+  <p><em>${restaurantName} — ${item.город || ''}</em></p>
+`;
+
+if (whatsappNumber) {
+  const jobTitle = item["должность_" + currentLang] || 'Должность не указана';
+  const restaurantName = item["название_ресторана_" + currentLang] || 'Ресторан не указан';
+  const message = currentLang === 'ru'
+    ? `Здравствуйте! Интересует вакансия "${jobTitle}" в ресторане "${restaurantName}".`
+    : `Сәлеметсіз бе! "${jobTitle}" вакансиясы "${restaurantName}" мейрамханасында қызықтырады.`;
+
+  sticker.onclick = () => {
+    window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank');
+  };
+}
+
+container.appendChild(sticker);
+ });
+    }
+
+    // Загрузка данных
+    async function loadData() {
+      try {
+        const response = await fetch(SCRIPT_URL);
+        
+        if (!response.ok) {
+          throw new Error(`Ошибка HTTP: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (!Array.isArray(data)) {
+          throw new Error('Данные не в ожидаемом формате');
+        }
+        
+        vacanciesData = data;
+        renderData();
+        
+      } catch (error) {
+        console.error('Ошибка загрузки:', error);
+        document.getElementById('stickers-container').innerHTML = `
+          <div class="error">
+            ${currentLang === 'ru' 
+              ? 'Ошибка загрузки данных' 
+              : 'Деректерді жүктеу қатесі'}
+          </div>
+        `;
+      }
+    }
+
+    // Загрузка при старте
+    document.addEventListener('DOMContentLoaded', loadData);
+  </script>
+</body>
+</html>

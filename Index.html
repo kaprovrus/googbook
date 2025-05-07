@@ -1,0 +1,49 @@
+<!DOCTYPE html><html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Помощник писателя с ИИ</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; max-width: 800px; margin: auto; }
+    textarea { width: 100%; height: 200px; margin-bottom: 10px; }
+    input, select, button { margin: 5px 0; padding: 10px; width: 100%; }
+    #output { white-space: pre-wrap; background: #f2f2f2; padding: 10px; border-radius: 8px; }
+  </style>
+</head>
+<body>
+  <h1>ИИ-помощник для написания книги</h1><label for="genre">Жанр:</label> <select id="genre"> <option value="фэнтези">Фэнтези</option> <option value="научная фантастика">Научная фантастика</option> <option value="исторический роман">Исторический роман</option> <option value="приключения">Приключения</option> </select>
+
+<label for="inputText">Текст главы или сцены:</label>
+
+  <textarea id="inputText" placeholder="Начни писать свою сцену здесь..."></textarea><button onclick="generate()">Продолжить с помощью ИИ</button>
+
+  <h3>Результат:</h3>
+  <div id="output"></div>  <script>
+    async function generate() {
+      const inputText = document.getElementById("inputText").value;
+      const genre = document.getElementById("genre").value;
+
+      const prompt = `Ты — опытный писатель. Жанр: ${genre}. Продолжи следующую сцену красиво, логично и стильно:\n\n${inputText}`;
+
+      const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer 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"
+        },
+        body: JSON.stringify({
+          model: "gpt-4",
+          messages: [
+            { role: "system", content: "Ты помогаешь писать книгу." },
+            { role: "user", content: prompt }
+          ],
+          max_tokens: 500
+        })
+      });
+
+      const data = await response.json();
+      const text = data.choices?.[0]?.message?.content || "Ошибка генерации.";
+      document.getElementById("output").textContent = text;
+    }
+  </script></body>
+</html>

@@ -1,38 +1,145 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>ИИ-писатель</title>
-  <style>
-    body { font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; }
-    textarea { width: 100%; height: 150px; margin-bottom: 10px; }
-    button { padding: 10px 20px; font-size: 16px; }
-    .result { margin-top: 20px; white-space: pre-wrap; background: #f0f0f0; padding: 10px; border-radius: 5px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Помощник для написания книг с ИИ</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        .container {
+            display: flex;
+            gap: 20px;
+        }
+        .editor-section, .ai-section {
+            flex: 1;
+        }
+        textarea, #aiResponse {
+            width: 100%;
+            min-height: 300px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            resize: vertical;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            margin: 5px 0;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .ai-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .loading {
+            display: none;
+            color: #3498db;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
-  <h1>ИИ-писатель</h1>
-  <textarea id="prompt" placeholder="Начни свой текст..."></textarea>
-  <br>
-  <button onclick="generate()">Продолжить с ИИ</button>
-  <div id="output" class="result"></div>
+    <h1>Помощник для написания книг с ИИ</h1>
+    
+    <div class="container">
+        <div class="editor-section">
+            <h2>Ваша книга</h2>
+            <textarea id="bookText" placeholder="Начните писать свою книгу здесь..."></textarea>
+            <div>
+                <button id="saveBtn">Сохранить</button>
+                <button id="exportBtn">Экспорт в PDF</button>
+            </div>
+        </div>
+        
+        <div class="ai-section">
+            <h2>Помощник ИИ</h2>
+            <div id="aiResponse" placeholder="Ответ ИИ появится здесь..."></div>
+            <div class="ai-actions">
+                <button id="continueBtn">Продолжить историю</button>
+                <button id="ideaBtn">Придумать идею</button>
+                <button id="characterBtn">Создать персонажа</button>
+                <button id="fixBtn">Улучшить текст</button>
+                <div id="loading" class="loading">ИИ думает...</div>
+            </div>
+        </div>
+    </div>
 
-  <script>
-    async function generate() {
-      const prompt = document.getElementById("prompt").value;
-      const output = document.getElementById("output");
-      output.textContent = "Генерация...";
-
-      const response = await fetch("https://script.google.com/macros/s/AKfycbz9H_Ax0EVx7bUczMBdZ9zsLdOCelAgitL7ofGfEb0iQxs7sqmQhdSXB-q1SCN075lOfQ/exec", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt })
-      });
-
-      const data = await response.json();
-      const text = data.choices?.[0]?.message?.content || data.error || "Ошибка.";
-      output.textContent = text.trim();
-    }
-  </script>
+    <script>
+        // URL вашего веб-приложения Google Apps Script
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbypY4zK4mTMqBWg4Bg6Cp3kEIfe4REqkb-11whH54SG1eINfAPyvLGlHjBgWSxd0I9QfA/exec';
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const bookText = document.getElementById('bookText');
+            const aiResponse = document.getElementById('aiResponse');
+            const loading = document.getElementById('loading');
+            
+            // Загружаем сохраненный текст из localStorage
+            if(localStorage.getItem('bookText')) {
+                bookText.value = localStorage.getItem('bookText');
+            }
+            
+            // Обработчики кнопок
+            document.getElementById('saveBtn').addEventListener('click', saveBook);
+            document.getElementById('exportBtn').addEventListener('click', exportToPDF);
+            document.getElementById('continueBtn').addEventListener('click', () => generateAI('Продолжи этот текст: '));
+            document.getElementById('ideaBtn').addEventListener('click', () => generateAI('Придумай интересную идею для книги в жанре: '));
+            document.getElementById('characterBtn').addEventListener('click', () => generateAI('Создай подробного персонажа для книги. Опиши его внешность, характер и мотивацию: '));
+            document.getElementById('fixBtn').addEventListener('click', () => generateAI('Улучши этот текст, сделай его более литературным: '));
+            
+            function saveBook() {
+                localStorage.setItem('bookText', bookText.value);
+                alert('Книга сохранена локально!');
+            }
+            
+            function exportToPDF() {
+                alert('Функция экспорта будет реализована позже');
+                // Здесь можно добавить экспорт через API или библиотеки
+            }
+            
+            async function generateAI(actionPrefix) {
+                const prompt = actionPrefix + bookText.value;
+                loading.style.display = 'block';
+                
+                try {
+                    const response = await fetch(SCRIPT_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ prompt: prompt })
+                    });
+                    
+                    const data = await response.json();
+                    aiResponse.innerHTML = data.choices[0].message.content.replace(/\n/g, '<br>');
+                } catch (error) {
+                    aiResponse.innerHTML = 'Ошибка: ' + error.message;
+                } finally {
+                    loading.style.display = 'none';
+                }
+            }
+        });
+    </script>
 </body>
 </html>

@@ -119,27 +119,34 @@
             }
             
             async function generateAI(actionPrefix) {
-                const prompt = actionPrefix + bookText.value;
-                loading.style.display = 'block';
-                
-                try {
-                    const response = await fetch(SCRIPT_URL, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ prompt: prompt })
-                    });
-                    
-                    const data = await response.json();
-                    aiResponse.innerHTML = data.choices[0].message.content.replace(/\n/g, '<br>');
-                } catch (error) {
-                    aiResponse.innerHTML = 'Ошибка: ' + error.message;
-                } finally {
-                    loading.style.display = 'none';
-                }
-            }
-        });
+  const prompt = actionPrefix + bookText.value;
+  loading.style.display = 'block';
+  aiResponse.innerHTML = ''; // Очищаем перед новым запросом
+
+  try {
+    const response = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt: prompt })
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    aiResponse.innerHTML = data.choices?.[0]?.message?.content.replace(/\n/g, '<br>') 
+                          || 'Неверный формат ответа';
+  } catch (error) {
+    console.error('Fetch error:', error);
+    aiResponse.innerHTML = `Ошибка: ${error.message}<br>Проверьте:<br>
+      1. Правильность URL в SCRIPT_URL<br>
+      2. Что скрипт развёрнут как веб-приложение<br>
+      3. Консоль разработчика (F12) для подробностей`;
+  } finally {
+    loading.style.display = 'none';
+  }
+}
     </script>
 </body>
 </html>
